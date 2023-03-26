@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "139522971831",
+    "project_id": "fir-activity-note-keeper",
+    "storage_bucket": "fir-activity-note-keeper.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139522971831:android:9f1d2dbd11623349e3d532",
+        "android_client_info": {
+          "package_name": "com.example.author_ragistration_firestore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139522971831-4t2nlu7p4q79dshpp3anp42ia1sbhk4r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.author_ragistration_firestore",
+            "certificate_hash": "a99f4302807e6ced10e7922e275f9cb361d6d410"
+          }
+        },
+        {
+          "client_id": "139522971831-l5532sfkvr3m6d92o2rkk5c28gbcj9h3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhSQ-iI405p487Y3Qj4D56N99PsCDPaeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139522971831-l5532sfkvr3m6d92o2rkk5c28gbcj9h3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
