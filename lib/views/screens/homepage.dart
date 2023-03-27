@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helper_class/firebase_auth_helper.dart';
 import '../../helper_class/firebase_firestore_DB_helper.dart';
@@ -20,6 +21,9 @@ class Home_page extends StatefulWidget {
 }
 
 class _Home_pageState extends State<Home_page> {
+
+  late SharedPreferences sharedPreferences;
+
   String? author;
   String? book;
 
@@ -33,6 +37,17 @@ class _Home_pageState extends State<Home_page> {
   GlobalKey<FormState> updateformKey = GlobalKey<FormState>();
 
   String date = DateTime.now().toString().split(" ")[0];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getper();
+  }
+
+  getper() async{
+    sharedPreferences = await SharedPreferences.getInstance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +64,9 @@ class _Home_pageState extends State<Home_page> {
         backgroundColor: Colors.blue[200],
         actions: [
           IconButton(
-              onPressed: () {
+              onPressed: () async {
                 FirebaseAuthHelper.firebaseAuthHelper.logOut();
+                await sharedPreferences.setBool("isLogin", false);
                 Navigator.of(context).pushReplacementNamed('Login_page');
               },
               icon: Icon(
@@ -59,72 +75,72 @@ class _Home_pageState extends State<Home_page> {
               ))
         ],
       ),
-      drawer: Drawer(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Column(
-          children: [
-            Expanded(
-                flex: 3,
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.blue[200],
-                    borderRadius:
-                        BorderRadius.only(topRight: Radius.circular(20)),
-                  ),
-                  child: CircleAvatar(
-                    radius: 70,
-                    backgroundColor: Colors.purple[100],
-                    backgroundImage: (user!.photoURL != null)
-                        ? NetworkImage(user!.photoURL as String)
-                        : (user!.isAnonymous)
-                            ? NetworkImage(
-                                "https://o.remove.bg/downloads/d961157e-0be1-4367-a2e7-feb979a9d1e7/images-removebg-preview.png")
-                            : null,
-                  ),
-                )),
-            Expanded(
-                flex: 8,
-                child: Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 50,
-                        alignment: Alignment.centerLeft,
-                        child: (user!.isAnonymous)
-                            ? Container()
-                            : (user!.displayName == null)
-                                ? Container()
-                                : Card(
-                                    elevation: 2,
-                                    child: Container(
-                                      height: 70,
-                                      alignment: Alignment.center,
-                                      width: double.infinity,
-                                      child: Text(
-                                          "  Username : ${user!.displayName}"),
-                                    ),
-                                  ), // Text("Phone : ${user!.phoneNumber}"),
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: (user!.isAnonymous)
-                            ? Container()
-                            : Card(
-                                elevation: 2,
-                                child: Container(
-                                    height: 45,
-                                    alignment: Alignment.center,
-                                    width: double.infinity,
-                                    child: Text("  Email : ${user!.email}")),
-                              ),
-                      ),
-                    ],
-                  ),
-                )),
-          ],
-        ),
-      ),
+      // drawer: Drawer(
+      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //           flex: 3,
+      //           child: Container(
+      //             alignment: Alignment.center,
+      //             decoration: BoxDecoration(
+      //               color: Colors.blue[200],
+      //               borderRadius:
+      //                   BorderRadius.only(topRight: Radius.circular(20)),
+      //             ),
+      //             child: CircleAvatar(
+      //               radius: 70,
+      //               backgroundColor: Colors.purple[100],
+      //               backgroundImage: (user!.photoURL != null)
+      //                   ? NetworkImage(user!.photoURL as String)
+      //                   : (user!.isAnonymous)
+      //                       ? NetworkImage(
+      //                           "https://o.remove.bg/downloads/d961157e-0be1-4367-a2e7-feb979a9d1e7/images-removebg-preview.png")
+      //                       : null,
+      //             ),
+      //           )),
+      //       Expanded(
+      //           flex: 8,
+      //           child: Container(
+      //             child: Column(
+      //               children: [
+      //                 Container(
+      //                   height: 50,
+      //                   alignment: Alignment.centerLeft,
+      //                   child: (user!.isAnonymous)
+      //                       ? Container()
+      //                       : (user!.displayName == null)
+      //                           ? Container()
+      //                           : Card(
+      //                               elevation: 2,
+      //                               child: Container(
+      //                                 height: 70,
+      //                                 alignment: Alignment.centerLeft,
+      //                                 width: double.infinity,
+      //                                 child: Text(
+      //                                     "  Username : ${user!.displayName}"),
+      //                               ),
+      //                             ), // Text("Phone : ${user!.phoneNumber}"),
+      //                 ),
+      //                 Container(
+      //                   alignment: Alignment.centerLeft,
+      //                   child: (user!.isAnonymous)
+      //                       ? Container()
+      //                       : Card(
+      //                           elevation: 2,
+      //                           child: Container(
+      //                               height: 45,
+      //                               alignment: Alignment.centerLeft,
+      //                               width: double.infinity,
+      //                               child: Text("  Email : ${user!.email}")),
+      //                         ),
+      //                 ),
+      //               ],
+      //             ),
+      //           )),
+      //     ],
+      //   ),
+      // ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: FirebaseFirestore.instance.collection("author").snapshots(),
           builder: (context, snapShot) {
@@ -423,22 +439,68 @@ class _Home_pageState extends State<Home_page> {
               SizedBox(
                 height: 15,
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  final ImagePicker picker = ImagePicker();
+              StatefulBuilder(
+               builder: (context, setState) {
+                 return Column(
+                   children: [
+                     ElevatedButton(
+                       onPressed: () async {
+                         final ImagePicker picker = ImagePicker();
 
-                  XFile? pickImage =
-                      await picker.pickImage(source: ImageSource.gallery);
+                         XFile? pickImage =
+                         await picker.pickImage(source: ImageSource.gallery);
 
-                  if (pickImage != null) {
-                    File compressedImage =
-                        await FlutterNativeImage.compressImage(pickImage.path);
-                    image = await compressedImage.readAsBytes();
-                    imageString = base64Encode(image!);
-                  }
-                  setState(() {});
-                },
-                child: Text("Pick Image"),
+                         if (pickImage != null) {
+                           File compressedImage =
+                           await FlutterNativeImage.compressImage(pickImage.path);
+                           image = await compressedImage.readAsBytes();
+                           imageString = base64Encode(image!);
+                         }
+                         setState(() {});
+                       },
+                       child: Text("Upload Book Image"),
+                     ),
+                     SizedBox(height: 15,),
+                     GestureDetector(
+                       onTap: () async {
+                         final ImagePicker picker = ImagePicker();
+
+                         XFile? pickImage =
+                             await picker.pickImage(source: ImageSource.gallery);
+
+                         if (pickImage != null) {
+                           File compressedImage =
+                               await FlutterNativeImage.compressImage(pickImage.path);
+                           image = await compressedImage.readAsBytes();
+                           imageString = base64Encode(image!);
+                         }
+                         setState(() {});
+                       },
+                       child: Card(
+                         elevation: 5,
+                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                         child: Container(
+                           height: 90,
+                           width: 90,
+                           child: Icon(Icons.camera_alt_outlined,color: Colors.grey,),
+                           margin: EdgeInsets.all(5),
+                           decoration: BoxDecoration(
+                             borderRadius: BorderRadius.circular(100),
+                             color: Colors.white,
+                             image: DecorationImage(
+                               fit: BoxFit.fill,
+                               image: MemoryImage(
+                                 base64Decode(
+                                     "${imageString}"),
+                               ),
+                             ),
+                           ),
+                         ),
+                       ),
+                     ),
+                   ],
+                 );
+               },
               ),
               SizedBox(
                 height: 15,
@@ -807,23 +869,70 @@ class _Home_pageState extends State<Home_page> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(height: 10,),
-                ElevatedButton(
-                  onPressed: () async {
-                    final ImagePicker picker = ImagePicker();
+                StatefulBuilder(
+                  builder: (context, setState) {
+                    return Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
 
-                    XFile? pickImage =
-                    await picker.pickImage(source: ImageSource.gallery);
+                            XFile? pickImage =
+                            await picker.pickImage(source: ImageSource.gallery);
 
-                    if (pickImage != null) {
-                      File compressedImage =
-                      await FlutterNativeImage.compressImage(pickImage.path);
-                      image = await compressedImage.readAsBytes();
-                      imageString = base64Encode(image!);
-                    }
-                    setState(() {});
+                            if (pickImage != null) {
+                              File compressedImage =
+                              await FlutterNativeImage.compressImage(pickImage.path);
+                              image = await compressedImage.readAsBytes();
+                              imageString = base64Encode(image!);
+                            }
+                            setState(() {});
+                          },
+                          child: Text("Update Book Image"),
+                        ),
+                        SizedBox(height: 15,),
+                        GestureDetector(
+                          onTap: () async {
+                            final ImagePicker picker = ImagePicker();
+
+                            XFile? pickImage =
+                            await picker.pickImage(source: ImageSource.gallery);
+
+                            if (pickImage != null) {
+                              File compressedImage =
+                              await FlutterNativeImage.compressImage(pickImage.path);
+                              image = await compressedImage.readAsBytes();
+                              imageString = base64Encode(image!);
+                            }
+                            setState(() {});
+                          },
+                          child: Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                            child: Container(
+                              height: 90,
+                              width: 90,
+                              child: Icon(Icons.camera_alt_outlined,color: Colors.grey,),
+                              margin: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: Colors.white,
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: MemoryImage(
+                                    base64Decode(
+                                        "${imageString}"),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
                   },
-                  child: Text("Pick Image"),
                 ),
+
                 // Stack(
                 //   alignment: Alignment.center,
                 //   children: [

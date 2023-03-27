@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helper_class/firebase_auth_helper.dart';
 
@@ -14,6 +15,8 @@ class Signin_page extends StatefulWidget {
 
 class _Signin_pageState extends State<Signin_page> {
 
+  late SharedPreferences sharedPreferences;
+
   String? email;
   String? password;
 
@@ -21,6 +24,17 @@ class _Signin_pageState extends State<Signin_page> {
 
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getper();
+  }
+
+  getper() async{
+    sharedPreferences = await SharedPreferences.getInstance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +181,7 @@ class _Signin_pageState extends State<Signin_page> {
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
+                    await sharedPreferences.setBool("isLogin", true);
                     Navigator.of(context).pushReplacementNamed('/' , arguments: res['user']);
                   } else if (res['error'] != null) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -250,6 +265,7 @@ class _Signin_pageState extends State<Signin_page> {
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
+                          await sharedPreferences.setBool("isLogin", true);
                           Navigator.of(context).pushReplacementNamed('/', arguments: res['user']);
                         } else if(res['error'] !=  null) {
                           ScaffoldMessenger.of(context).showSnackBar(
